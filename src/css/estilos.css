@@ -1,0 +1,43 @@
+.divTextContend {
+  width: 40%;
+  height: auto;
+  background-color: rgb(233, 15, 146);
+}
+
+.divInnerHTML {
+  width: 40%;
+  height: auto;
+  background-color: rgb(172, 123, 9);
+}
+
+.t1 {
+  border: 2px;
+  border-style: solid;
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 1s forwards;
+}
+
+.fade-out {
+  animation: fadeOut 1s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
