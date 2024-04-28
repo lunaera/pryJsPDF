@@ -543,13 +543,18 @@ document.getElementById("btnExportPDF").addEventListener("click", async () => {
 
         // una hoja t/c tiene 21.59 (215.9) cm de ancho y 27.94 (279.4) de alto 
         const options = {
-            startY: 180, // Posición inicial vertical de la tabla desde el borde del documento PDF
+            startY: 40, // Posición inicial vertical de la tabla desde el borde del documento PDF
 
 
             theme: 'grid', // Estilo de la tabla (ver mas abajo estan otros ejemplos)
 
             //headStyles: { fillColor: [41, 128, 185], textColor: [255, 195, 0], fontSize: 10 },
-            headStyles: { fillColor: [41, 128, 185], textColor: 255, fontSize: 12, fontStyle: "bold", font: 'Helvetica', halign: 'center' }, // Estilos del encabezado
+            headStyles: { // Estilos del encabezado 
+                fillColor: [41, 128, 185],
+                textColor: 255, fontSize: 12,
+                font: 'Helvetica', fontStyle: "bold",
+                halign: 'center' //halign es Horizontal aligment
+            },
             //bodyStyles: { textColor: [255, 195, 0], fontSize: 8 }, // Estilos del cuerpo
             bodyStyles: { textColor: 0, fontSize: 8, font: 'Helvetica' }, // Estilos del cuerpo
 
@@ -559,6 +564,11 @@ document.getElementById("btnExportPDF").addEventListener("click", async () => {
 
 
             autoSize: true,
+
+            //margin: { right: 10, left: doc.internal.pageSize.getWidth() - 130 - 10 }
+
+
+
 
             // divide las columnas si no cambe horizontalmente
             // split overflowing columns into pages
@@ -585,9 +595,13 @@ document.getElementById("btnExportPDF").addEventListener("click", async () => {
 
         console.log(doc.internal.pageSize.getWidth());
 
+
+
         // Agregar la tabla al documento PDF
         // en el head es un arrays de array por si se desea otra fila de encabezado
         //doc.autoTable({ head: [[fila1], [fila2]] etc
+
+
         doc.autoTable({
             head: [['ID', 'Nombre', 'Apellidos', 'Edad', 'Genero']],
             body: datosTabla,
@@ -606,15 +620,51 @@ document.getElementById("btnExportPDF").addEventListener("click", async () => {
 
 
 
+        // ==========FORMA MANUAL CON AUTO TABLE INDICANDO EL NÚMERO DE REGISTROS EN CADA HOJA==========
+
+        /*
+
+        const margin = 30;
+        let startY = margin;
+
+        const dataPerPage = 3; // Número de filas de datos por página
+        let currentPage = 1;
+
+        for (let i = 0; i < datosTabla.length; i += dataPerPage) {
+            // Dividir los datos en partes que quepan en cada página
+            const dataForPage = datosTabla.slice(i, i + dataPerPage);
+
+            // Agregar el encabezado de la página en la nueva página
+            if (currentPage !== 1) {
+                doc.addPage();
+                // Aquí agregas el encabezado de la página, como un título o cualquier otro contenido que necesites
+                encabezado(doc, datosImagen);
+                startY = margin;
+            }
+
+            // Agregar la tabla en la página actual
+            doc.autoTable({
+                startY: startY,
+                head: [['ID', 'Nombre', 'Apellidos', 'Edad', 'Género']], // Encabezado de la tabla
+                body: dataForPage, // Cuerpo de la tabla
+                theme: 'grid', // Estilo de la tabla
+                headStyles: { fillColor: [41, 128, 185], textColor: 255, fontSize: 12, fontStyle: "bold", font: 'Helvetica', halign: 'center' }, // Estilos del encabezado
+                bodyStyles: { textColor: 0, fontSize: 8, font: 'Helvetica' }, // Estilos del cuerpo
+                autoSize: true // Ajustar automáticamente el tamaño de las columnas
+            });
+
+            startY = margin; // Restablecer la posición vertical inicial para la próxima página
+            currentPage++;
+        }
+
+
+*/
 
 
 
 
 
-
-
-
-        // ============ FUnciona sin linbreria autoTable
+        // ============ FUnciona sin libreria autoTable
         /*
         let posY = 200;
         const rowHeight = 15; // Altura de la fila
@@ -722,7 +772,7 @@ document.getElementById("btnExportPDF").addEventListener("click", async () => {
         doc.setFont("Helvetica", "bold"); // nueva libreria jspdf 2.5.1
         // doc.setFontType("bold"); // estilo con vieja libreria, va con setFont
         doc.setFontSize(10); // tamaño
-        doc.setTextColor(0, 230, 255); // establece el color en RGB (0, 0, 255) azul
+        doc.setTextColor(118, 18, 4); // establece el color en RGB (0, 0, 255) 
 
         // Obtener el número total de páginas
         const totalPages = doc.internal.getNumberOfPages();
