@@ -3,15 +3,31 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>LocalStorage Erahin</title>
+        <title>LocalStorage PDF Erahin</title>
         <link rel="icon" sizes="64x64" href="src/assets/iconoHTML.png">
         <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
             rel="stylesheet"
             integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
             crossorigin="anonymous">
-
-        <link rel="stylesheet" href="src/css/estilos.css">
+<!----
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js" integrity="sha512-ToRWKKOvhBSS8EtqSflysM/S7v9bB9V0X3B1+E7xo7XZBEZCPL3VX5SFIp8zxY19r7Sz0svqQVbAOx+QcLQSAQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.js" integrity="sha512-Bw9Zj8x4giJb3OmlMiMaGbNrFr0ERD2f9jL3en5FmcTXLhkI+fKyXVeyGyxKMIl1RfgcCBDprJJt4JvlglEb3A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+            <!--para que funcione autoTable-->
+            <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/2.3.0/jspdf.plugin.autotable.js" integrity="sha512-EbSHTv96n4XTJuQaZBr3hjCFMahjkW7uyPrMOs8Le0ypdly7KD1ENIOi9jXUQ97q7m+0TgAFPiAhM/F1uj87Zw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>-->
+            
+           <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.12/jspdf.plugin.autotable.js" integrity="sha512-P4YL0MhsuhaC8NbhFc/54icD4N2kHc2oE/E8qqPXAryNJDWv6UjNvSsCgXXCZbvBbU8IeyZHcy7IW4JwgAp8JQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+           -->
+           <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.js" integrity="sha512-xn2o9RVB1RNMlahbzLIczHwL2RxT91DMmYdG8QI2/noMAh9zoyzGeJYT/TKkAPXVw/IrnP+k+4GE52PVsGRV9Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+            <!-- para usar saveAs-->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js" integrity="sha512-Qlv6VSKh1gDKGoJbnyA5RMXYcvnpIqhO++MhIM2fStMcGT9i2T//tSwYFlcyoRRDcDZ+TYHpH8azBBCyhpSeqw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        
+        
+            <link rel="stylesheet" href="src/css/estilos.css">
     </head>
     <body>
 
@@ -26,6 +42,18 @@
                 <input type="text" name="apellidos" id="apellidos" required>
                 <label for="edad">Edad:</label>
                 <input type="number" name="edad" id="edad" required>
+               
+                <div class="col-sm-10">
+                    <label for="rdHombre">Género:</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="genero" id="rdHombre" value="Hombre">
+                        <label class="form-check-label" for="rdHombre">Hombre</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="genero" id="rdMujer" value="Mujer" checked>
+                        <label class="form-check-label" for="rdMujer">Mujer </label>
+                    </div>
+                </div>
 
                 <div>
                     <button class="btn btn-primary"
@@ -56,13 +84,14 @@
 
             <!-- Paso 1 ocultamos el contenedor-->
             <div id="valoresTabla" style="display: none;">
-                <table class="table">
+                <table class="table" id="tablaPersonas">
                     <thead>
                         <tr>
                             <th scope="col">ID</th>
                             <th scope="col">Nombre</th>
                             <th scope="col">Apellidos</th>
                             <th scope="col">Edad</th>
+                            <th scope="col">Género</th>
                             <th scope="col">Acciones</th>
                         </tr>
                     </thead>
@@ -72,11 +101,17 @@
                 </table>
             </div>
 
-            <div id="resultSession">
+            <div id="container">
+                
+                    <label for="txtURLimg">URL imágen:</label>
+                    <input type="url" name="txtURLimg" id="txtURLimg" value="https://th.bing.com/th/id/R.6345aaa8e040b5764c3eb89f6c5dffbf?rik=73l1M5sM5T1Q7A&riu=http%3a%2f%2fsic.cultura.gob.mx%2fimages%2f63912&ehk=H47zdzlYKzXZX8NdAgT7MPLu5qzuwoUZQi8NzCQSUco%3d&risl=&pid=ImgRaw&r=0">
+                    <!--<canvas id="myCanvas" width="400" height="200" style="border:1px solid black;"></canvas>-->
+                    <button id="btnExportPDF">Exportar a PDF</button>
+               
 
             </div>
         </section>
-        <!-- si quieren usar un archivo aparte para la clase se debe agregar en el packa json y en el script =type="module-->
+        <!-- si quieren usar un archivo aparte para la clase se debe agregar en el package json y en el script =type="module-->
         <!-- <script src="src/js/sstorageModificado.js" type="module"></script>-->
         <script src="src/js/localStorage.js"></script>
 
@@ -88,5 +123,9 @@
             src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
             integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
             crossorigin="anonymous"></script>
+
+            
+            
+
     </body>
 </html>

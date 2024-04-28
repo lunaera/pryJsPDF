@@ -3,59 +3,56 @@
 
 
 class Persona {
-    constructor(id, nombre, apellidos, edad) {
+    constructor(id, nombre, apellidos, edad, genero) {
         this.idPersona = id;
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.edad = edad;
+        this.genero = genero;
     }
 }
+
+
+
+// se crea la clase
+class DataManager {
+
+    constructor(keyLocalStorage) {
+        this.keyLocalStorage = keyLocalStorage;
+        // convertimos la cadena de datos del localStorage en un objeto JSON, como es una cadena de texto
+        //entonces se convierte a objeto
+        this.localStorageDB = JSON.parse(localStorage.getItem(this.keyLocalStorage)) || [];
+    }
+
+    getData() {
+        return this.localStorageDB;
+    }
+    //agregar nuevos datos
+    agregar(objPersona) {
+        this.localStorageDB.push(objPersona);
+        // como se recibe un objeto se debe convertir a cadena JSON
+        localStorage.setItem(this.keyLocalStorage, JSON.stringify(this.localStorageDB));
+    }
+
+    // actualizar datos y funciona con el de eliminar
+    set(colection) {
+        this.localStorageDB = colection;
+        localStorage.setItem(this.keyLocalStorage, JSON.stringify(this.localStorageDB));
+    }
+    delete(index, totElement) {
+        const db = this.localStorageDB;
+        db.splice(index, totElement);
+        localStorage.setItem(this.keyLocalStorage, JSON.stringify(db));
+    }
+    deleteAll() {
+        localStorage.clear(this.keyLocalStorage);
+        this.localStorageDB = [];
+    }
+}
+
 
 // se crea un objeto de una funcion, envía como argumento el nombre de la clave para el localStorage
-let objDataManager = new dataManager("Personas");
-
-// se crea la función
-function dataManager(keyLocalStorage) {
-
-    // convertimos la cadena de datos del localStorage en un objeto JSON, como es una cadena de texto 
-    //entonces se convierte a objeto
-    let localStorageDB = JSON.parse(localStorage.getItem(keyLocalStorage)) || []; // operador or o de corto circuito
-
-
-
-    // hacemos un cierre (clousure)
-    return {
-
-        //agregar nuevos datos
-        agregar: (objPersona) => {
-            localStorageDB.push(objPersona);
-            // como se recibe un objeto se debe convertir a cadena JSON
-            localStorage.setItem(keyLocalStorage, JSON.stringify(localStorageDB));
-        },
-
-        // recuperar datos
-        getData: () => {
-            return localStorageDB
-        },
-
-        // actualizar datos y funciona con el de eliminar
-        set: (colection) => {
-            localDB = colection;
-            localStorage.setItem(keyLocalStorage, JSON.stringify(localDB));
-        },
-        delete: (index, totElement) => {
-            const db = localStorageDB;
-            db.splice(index, totElement);
-            localStorage.setItem(keyLocalStorage, JSON.stringify(db));
-        },
-        deleteAll: () => {
-            localStorage.clear(keyLocalStorage);
-            localStorageDB = [];
-        }
-    }
-}
-
-
+const objDataManager = new DataManager("Personas");
 
 // =================Paso 5: modificamos los eventos del formulario y después regresar al html==============
 
@@ -68,9 +65,10 @@ document.getElementById("frmDatosPersonales").addEventListener("submit", functio
     const nombre = document.getElementById("nombre").value;
     const apellidos = document.getElementById("apellidos").value;
     const edad = document.getElementById("edad").value;
+    const genero = document.querySelector('input[name="genero"]:checked').value;
 
     // creamos una instancia de la clase Persona y enviamos los datos
-    const objPersona = new Persona(idPersona, nombre, apellidos, edad);
+    const objPersona = new Persona(idPersona, nombre, apellidos, edad, genero);
     objDataManager.agregar(objPersona);
 
     // creamos una funcion para las alertas y creamos el css
@@ -111,6 +109,7 @@ document.querySelector("#btnMostrar").addEventListener("click", function () {
             const celdaNombre = document.createElement("td");
             const celdaApellidos = document.createElement("td");
             const celdaEdad = document.createElement("td");
+            const celdaGenero = document.createElement("td");
             const celdaAcciones = document.createElement("td");
 
             // crear los botones y div sin cambios
@@ -121,6 +120,7 @@ document.querySelector("#btnMostrar").addEventListener("click", function () {
             celdaNombre.textContent = persona.nombre;
             celdaApellidos.textContent = persona.apellidos;
             celdaEdad.textContent = persona.edad;
+            celdaGenero.textContent = persona.genero;
 
             // Añadimos los botones a las celdas
             celdaAcciones.appendChild(divBotones);
@@ -130,6 +130,7 @@ document.querySelector("#btnMostrar").addEventListener("click", function () {
             fila.appendChild(celdaNombre);
             fila.appendChild(celdaApellidos);
             fila.appendChild(celdaEdad);
+            fila.appendChild(celdaGenero);
             fila.appendChild(celdaAcciones); // aqui se ocupa la varible que retorna el método
 
             // agregar la fila a la tabla
@@ -230,9 +231,10 @@ function crearBotones() {
             const Nombre = filaEditada.cells[1].textContent;
             const Apellidos = filaEditada.cells[2].textContent;
             const Edad = filaEditada.cells[3].textContent;
+            const Genero = filaEditada.cells[4].textContent;
 
 
-            console.log(`id ${idPersona} Nombre ${Nombre} Apellidos ${Apellidos} Edad: ${Edad}`);
+            console.log(`id ${idPersona} Nombre ${Nombre} Apellidos ${Apellidos} Edad: ${Edad} Sexo:${Genero}`);
 
             // obtenemos los valores previos de la sessión
             const dbLocal = objDataManager.getData();
@@ -243,6 +245,7 @@ function crearBotones() {
                     persona.nombre = Nombre;
                     persona.apellidos = Apellidos;
                     persona.edad = Edad;
+                    persona.genero = Genero;
                 }
             }
             // invocamos al metodo set y le enviamos los nuevos datos actualizados
@@ -367,6 +370,7 @@ document.querySelector("#frmBuscar").addEventListener("submit", function (event)
             const celdaNombre = document.createElement("td");
             const celdaApellidos = document.createElement("td");
             const celdaEdad = document.createElement("td");
+            const celdaGenero = document.createElement("td");
             const celdaAcciones = document.createElement("td");
 
             // crear los botones y div sin cambios
@@ -377,6 +381,7 @@ document.querySelector("#frmBuscar").addEventListener("submit", function (event)
             celdaNombre.textContent = datosPersona.nombre;
             celdaApellidos.textContent = datosPersona.apellidos;
             celdaEdad.textContent = datosPersona.edad;
+            celdaGenero.textContent = datosPersona.genero;
 
             // Añadimos los botones a las celdas
             celdaAcciones.appendChild(divBotones);
@@ -386,6 +391,7 @@ document.querySelector("#frmBuscar").addEventListener("submit", function (event)
             fila.appendChild(celdaNombre);
             fila.appendChild(celdaApellidos);
             fila.appendChild(celdaEdad);
+            fila.appendChild(celdaGenero);
             fila.appendChild(celdaAcciones); // aqui se ocupa la varible que retorna el método
 
             // agregar la fila a la tabla
@@ -472,3 +478,463 @@ document.getElementById("btnDeleteAll").addEventListener("click", () => {
     }
 
 });
+
+
+
+
+document.getElementById("btnExportPDF").addEventListener("click", async () => {
+
+    try {
+
+        // 1 obtenemos la url de la caja de texto o localmente
+        // COLOCAR EN LA CAJA DE TEXTO: src/assets/zapateria.WEBP       RUTA DE LA IMAGEN O DIRECTAMENTE EN LA VARIABLE
+        const urlImage = document.getElementById("txtURLimg").value;
+        //ruta imagen itvo
+        //https://th.bing.com/th/id/R.6345aaa8e040b5764c3eb89f6c5dffbf?rik=73l1M5sM5T1Q7A&riu=http%3a%2f%2fsic.cultura.gob.mx%2fimages%2f63912&ehk=H47zdzlYKzXZX8NdAgT7MPLu5qzuwoUZQi8NzCQSUco%3d&risl=&pid=ImgRaw&r=0
+
+        //const urlImage = "src/assets/zapateria.WEBP";
+
+        // ================cargamos la imagen mediante una la función asincrona
+        const datosImagen = await cargarImagen(urlImage);
+
+
+        // =============================== Crea un nuevo documento PDF 117% en chrome para pdf
+        // una hoja t/c tiene 21.59 mm de ancho y 27.94 de alto
+
+
+        /*
+        const doc = new jsPDF({   // version 1.5.3
+            orientation: 'portrait', // postrait=> vertical 'landscape' = horizontal
+            format: 'letter', // Formato de la página y respeta el amrgen inferior del pie de pagina
+            unit: 'mm', // Unidades en milímetros
+            /*margin: {
+                top: 50, right: 50, bottom: 10, left: 10
+            }*/
+        //});
+
+
+        //const doc = new jspdf.jsPDF('P'); // si lleva L se refiere que el formato de la hoja es horizontal P vertical
+
+        const doc = new jspdf.jsPDF({  //ultima version 2.5.1 pero no acepta el setFontType asu vez es doc.setFont("Helvetica", "bold");
+            orientation: 'portrait', // postrait=> vertical 'landscape' = horizontal
+            format: 'letter', // Formato de la página y respeta el amrgen inferior del pie de pagina
+            unit: 'mm', // Unidades en milímetros
+            /*margin: {
+                top: 50, right: 50, bottom: 10, left: 10
+            }*/
+        });
+
+        //====================================creamos el encabezado
+        encabezado(doc, datosImagen);
+
+        // 5 AÑADIMOS LA IMAGEN AL DOCUMENTO
+        //doc.addImage(datosImagen, 'JPG', 0, 0, 50, 50); // 0 0 significa coordenas x y y ------- 50 50 es el tamaño w y h
+
+        // Añade una página vacía al documento
+        //doc.addPage();
+
+
+        const personas = objDataManager.getData();
+        const datosTabla = personas.map(persona => [persona.idPersona, persona.nombre, persona.apellidos, persona.edad, persona.genero]);
+        console.log(personas);
+
+
+        // ============ se usa la libreria jspdf-autotable
+
+        // una hoja t/c tiene 21.59 (215.9) cm de ancho y 27.94 (279.4) de alto 
+        const options = {
+            startY: 180, // Posición inicial vertical de la tabla desde el borde del documento PDF
+
+
+            theme: 'grid', // Estilo de la tabla (ver mas abajo estan otros ejemplos)
+
+            //headStyles: { fillColor: [41, 128, 185], textColor: [255, 195, 0], fontSize: 10 },
+            headStyles: { fillColor: [41, 128, 185], textColor: 255, fontSize: 12, fontStyle: "bold", font: 'Helvetica', halign: 'center' }, // Estilos del encabezado
+            //bodyStyles: { textColor: [255, 195, 0], fontSize: 8 }, // Estilos del cuerpo
+            bodyStyles: { textColor: 0, fontSize: 8, font: 'Helvetica' }, // Estilos del cuerpo
+
+            // total de unidades: 215.89
+            //columnas: 130
+            // headStyles: { rowHeight: 113 },
+
+
+            autoSize: true,
+
+            // divide las columnas si no cambe horizontalmente
+            // split overflowing columns into pages
+            /*
+            horizontalPageBreak: true,
+            horizontalPageBreakRepeat: 0, // repeat this column in split pages*/
+
+
+            /*
+            // =================anchos de columnas establecidos manualmente, se queda el autoZise
+            columnStyles: {
+                0: { cellWidth: 15, halign: "center" },
+                1: { cellWidth: 30 },
+                2: { cellWidth: 50 },
+                3: { cellWidth: 15, halign: "center" },
+                4: { cellWidth: 20, halign: "center" }
+            },
+            //margin: { left: 10, right: doc.internal.pageSize.getWidth() - 130 - 10 } // alinear a la izquierda
+            //margin: { right: 10, left: doc.internal.pageSize.getWidth() - 130 - 10 } // alinear a la derecha
+            margin: { left: (doc.internal.pageSize.getWidth() - 130) / 2, right: 42.945 } // alinear a al centro right tiene que medir exacto con lo que mide left
+*/
+        };
+
+
+        console.log(doc.internal.pageSize.getWidth());
+
+        // Agregar la tabla al documento PDF
+        // en el head es un arrays de array por si se desea otra fila de encabezado
+        //doc.autoTable({ head: [[fila1], [fila2]] etc
+        doc.autoTable({
+            head: [['ID', 'Nombre', 'Apellidos', 'Edad', 'Genero']],
+            body: datosTabla,
+            ...options,
+            didParseCell: function (data) {
+                if (data.section !== "head" && data.column.index === 3) { // Verifica si no es el encabezado y si es la columna de la Edad
+                    const edad = parseFloat(data.cell.raw); // Convierte el valor de la celda a un número
+                    if (!isNaN(edad)) { // Verifica si es un número válido
+                        // Formatea el valor como moneda
+                        const formattedValue = "$" + edad.toFixed(2); // Formato de moneda con dos decimales
+                        data.cell.text = formattedValue; // Establece el texto de la celda con el nuevo formato
+                    }
+                }
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+
+        // ============ FUnciona sin linbreria autoTable
+        /*
+        let posY = 200;
+        const rowHeight = 15; // Altura de la fila
+        const columns = ["ID", "Nomnre", "Apellidos", "Edad", "Género"];
+        const columnWidths = [34, 34, 34, 34, 34];
+        const margin = 20; // Margen izquierdo
+        // Función para dibujar el encabezado de la tabla
+        function drawTableHeader() {
+         
+         
+         
+         
+         
+         
+            doc.setFont("Helvetica");
+            doc.setFontType("bolditalic");
+            doc.setTextColor(0);
+            doc.setFontSize(12);
+            for (let j = 0; j < columns.length; j++) {
+                doc.cell(margin + (j * columnWidths[j]), posY, columnWidths[j], rowHeight, columns[j], 1);
+            }
+            posY += rowHeight;
+        }
+         
+        // Función para dibujar el contenido de cada persona
+        function drawPersona(persona) {
+            doc.setTextColor('FF00FF');
+            console.log("tabla:" + columns.length);
+            const clave = Object.keys(persona);
+            console.log("clave" + clave);
+            console.log("Persona" + clave.length);
+         
+            for (let i = 0; i < columns.length; i++) {
+                doc.cell(margin + (i * columnWidths[i]), posY, columnWidths[i], rowHeight, persona[clave[i]]);
+            }
+            posY += rowHeight;
+        }
+         
+        // Función para verificar si es necesario agregar una nueva página
+        function checkNewPage() {
+            let pageHeight = doc.internal.pageSize.height;
+            if (posY + rowHeight >= pageHeight - 15) {
+                doc.addPage();
+                encabezado(doc, datosImagen);
+                posY = 30;
+                pageHeight = doc.internal.pageSize.height;
+                drawTableHeader();
+            }
+        }
+         
+        // Dibujar encabezado de la tabla en la primera página
+        drawTableHeader();
+         
+        // Iterar sobre las personas y dibujar su contenido
+        for (let i = 0; i < personas.length; i++) {
+            drawPersona(personas[i]);
+            checkNewPage();
+        }
+         
+        */
+
+
+
+
+
+        // Obtener el total de mujeres y hombres
+
+        const categoryCounts = {};
+
+        for (const persona of personas) { // recorre la base de datos localstorage
+            if (categoryCounts.hasOwnProperty(persona.genero)) { // verifica si ya tiene una propiedad con esa categoría
+                categoryCounts[persona.genero]++; // si ya lo tiene, entonces solo incrementa la unidad
+            } else {
+                categoryCounts[persona.genero] = 1; // en caso contrario crea una nueva propiedad y le da el valor de 1
+            }
+
+        }
+
+        console.log(categoryCounts);
+
+
+
+        // ========================== Graficar
+        doc.addPage();
+        encabezado(doc, datosImagen);
+
+        // Crear gráfica de barras 
+        const chartPosX = 10; // margen izquierdo 
+        const chartPosY = 200; // margen superior  hasta el inicio de la gráfica
+        const chartWidth = 180; // ancho total de la gráfica de barra
+        const maxBarHeight = 100; // altura máxima de la gráfica de barras
+        const barSpacing = 5; // espaciado entre columnas
+
+        grafica(doc, categoryCounts, chartPosX, chartPosY, chartWidth, maxBarHeight, barSpacing); // Valores de ejemplo para las coordenadas y dimensiones del gráfico
+
+
+
+
+
+
+
+        // ========================== Estilo para número de páginas
+
+        //doc.setFont("Helvetica"); // fuente vieja libreria
+        doc.setFont("Helvetica", "bold"); // nueva libreria jspdf 2.5.1
+        // doc.setFontType("bold"); // estilo con vieja libreria, va con setFont
+        doc.setFontSize(10); // tamaño
+        doc.setTextColor(0, 230, 255); // establece el color en RGB (0, 0, 255) azul
+
+        // Obtener el número total de páginas
+        const totalPages = doc.internal.getNumberOfPages();
+
+        // Agregar números de página a cada página
+        for (let i = 1; i <= totalPages; i++) {
+            // Ir a la página específica
+            doc.setPage(i);
+            // Agregar el número de página en la parte inferior de la página
+            //doc.text(`Página ${i} de ${totalPages}`, doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
+
+            // Agregar el número de página en la parte inferior derecha de la página
+            doc.text(`Página ${i} de ${totalPages}`, doc.internal.pageSize.getWidth() - 10, doc.internal.pageSize.getHeight() - 10, { align: 'right' });
+        }
+
+
+
+        //  devuelve un objeto blob del documento PDF generado mediante una promesa 
+        //Blob (Binary Large Object) es un tipo de objeto en JavaScript que representa datos binarios
+        const pdfBlob = new Promise((resolve) => {
+            // Guarda el documento como un blob osea en formato blob
+            const blob = doc.output('blob');
+            resolve(blob); // la promesa se cumplirá con el objeto blob creado
+        });
+
+        // Espera a que se resuelva la promesa
+        const blob = await pdfBlob;
+
+        // Aquí puedes hacer lo que necesites con el blob, como descargarlo
+        saveAs(blob, "documento.pdf");
+    }
+    catch (error) {
+        console.log("Error" + error);
+    }
+});
+
+
+
+
+function cargarImagen(url) {
+
+    // devolvemos una promesa
+    return new Promise(function (resolve, reject) {
+
+        // creamos un obj Imagen
+        var img = new Image();
+        img.crossOrigin = "anonymous"; // evitar que se bloquee al cargar la imágen
+
+
+        /**
+         * onload y onerror se colocan antes de asignar la url a la imagen para garantizar 
+         * que las funciones onload y onerror estén configuradas correctamente 
+         * antes de que comience el proceso de carga de la imagen.
+         * Esto asegura que estas funciones estén listas para manejar el éxito o el fracaso 
+         * de la carga de la imagen desde el momento en que se inicia el proceso de carga.
+         */
+
+
+        img.onload = function () { // se ejecutará cuando la imagen se cargue completamente en el navegador
+
+            // se crea un nuevo lienzo para crear gráficos como imagenes 
+            var canvas = document.createElement('canvas');
+            // se obtiene un contexto para dibujar en el lienzo
+            var ctx = canvas.getContext('2d');
+            canvas.width = img.width; // se establece el ancho del lienzo que coincida con el ancho de la imagen
+            canvas.height = img.height; // se establece el alto del lienzo que coincida con la altura de la imagen
+            ctx.drawImage(img, 0, 0); // se dibuja la imagen en la posicion 0,0 osea a la izquierda
+
+            //Se convierte el contenido del lienzo en una URL de datos en formato JPEG
+            var dataURL = canvas.toDataURL('image/JPG');
+
+            //Se resuelve la promesa con la URL de datos de la imagen generada. 
+            //Esto significa que la promesa se completará exitosamente con la URL de datos de la imagen
+            resolve(dataURL);
+        };
+
+        // en caso de que se genere un error al cargar la imagen se ejecuta oneerror
+        img.onerror = function () {
+            reject(new Error('Failed to load image'));
+        };
+
+        // Se asigna la URL de la imagen al objeto de imagen para iniciar el proceso de carga de la imagen
+        /**
+         * En este punto, el navegador comienza a cargar la imagen desde la URL especificada. 
+         * La carga de la imagen es una operación asíncrona, por lo que el código continuará ejecutándose 
+         * mientras la imagen se carga en segundo plano.
+         */
+        img.src = url;
+    });
+}
+
+
+function encabezado(doc, datosImagen) {
+
+    //doc.setFont("Helvetica");//vieja librería
+    doc.setFont("Helvetica", "bold"); // fuente y estylo con nueva libreria 2.5.1 de jspdf
+    // doc.setFontType("bold"); // estilo con libreria 1.5.
+    doc.setFontSize(20); // tamaño
+    doc.setTextColor(0, 0, 255); // establece el color en RGB (0, 0, 255) azul
+
+    /**
+     * reporte personal es el título del pdf
+     * doc.internal.pageSize.getWidth() / 2 => obtiene el ancho de la página y lo divide entre 2 para poder centrar
+     * 12 ==> es el espacio vertical en relación al margen superior, 12 unidades
+     * { align: "center" } => centrado
+     */
+    doc.text("Reporte del Personal", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
+
+
+    // este bloque coloca un texto inclinado
+    /*
+    doc.setFontSize(12);
+    doc.setFont("Georgia");
+    doc.setFontType("bolditalic");
+    doc.setTextColor(0, 134, 156);
+    doc.text("#INFOTICS", 10, 10, 25, 20); //x=10, y=30, ancho=25, alto=20   25 grado =hace que el texto esté inclinado
+*/
+
+    // doc.addImage(datosImagen, 'JPG', 0, 0, 50, 50); // 0 0 significa coordenas x y y ------- 25 25 es el tamaño w y h
+    doc.addImage(datosImagen, 'JPEG', 0, 0, 25, 25);
+    //doc.setTextColor(255, 0, 0);
+}
+
+
+
+/**
+ * plain: Este estilo elimina todos los bordes de la tabla, dejando solo el contenido de las celdas sin ningún tipo de borde visible.
+striped: Este estilo alterna los colores de fondo de las filas de la tabla, creando un efecto de rayas. Una fila tendrá un fondo de color y la siguiente fila tendrá un fondo de color diferente.
+grid: Este estilo es el que ya conocemos, que agrega bordes visibles alrededor de cada celda, creando un efecto de cuadrícula.
+row: Este estilo solo agrega bordes alrededor de las filas de la tabla, dejando las columnas sin bordes.
+row-and-column: Este estilo agrega bordes alrededor de las filas y columnas de la tabla, creando un efecto de rejilla pero sin bordes en el interior de las celdas.
+ */
+
+// Función para generar el gráfico de barras
+function grafica(doc, categoryCounts, chartPosX, chartPosY, chartWidth, maxBarHeight, barSpacing) {
+    const categoryColors = {
+        Hombre: [0, 0, 255], // Azul
+        Mujer: [255, 0, 0], // Rojo
+        Mujerr: [0, 0, 205], // 
+        Hombr: [0, 234, 0] // 
+    };
+
+    //calcular el total de ancho de cada barra de la gráfica.
+    //Object.keys(categoryCounts).length: devuelve el número total de categorías en el objeto categoryCounts
+    const barWidth = (chartWidth - (barSpacing * (Object.keys(categoryCounts).length - 1))) / Object.keys(categoryCounts).length;
+
+    //console.log(Object.keys(categoryCounts).length - 1); //imprime 3 
+    //console.log(Object.keys(categoryCounts).length - 1) // imprime 4
+    console.log(barWidth); // imprime el ancho de cada barra
+
+
+
+
+
+    // ==================== cuenta el valor máximo de la categoría para ver quién tendrá la barra mas alta
+    let maxCount = 0;
+    for (const category in categoryCounts) {
+        if (categoryCounts[category] > maxCount) {
+            maxCount = categoryCounts[category];
+
+        }
+    }
+
+
+    /**
+     * currentBarX: Esta variable lleva un seguimiento de la posición actual en el eje X donde se dibujará 
+     * la próxima barra en el gráfico. Inicialmente se establece en chartPosX, 
+     * que es la posición horizontal donde comienza el gráfico de barras.
+     */
+    let currentBarX = chartPosX;
+
+
+    // =================== Graficando las barras ========
+
+    for (const category in categoryCounts) {
+        // altura de cada barra
+        const barHeight = (categoryCounts[category] / maxCount) * maxBarHeight; //altura maxima:10
+
+        // se le aplica un color a cada barra
+        const color = categoryColors[category]; // se recupera el nombre del color
+        doc.setFillColor(color[0], color[1], color[2]); // se le aplica el color RGB
+
+
+        // rectángulo en la posición (currentBarX, chartPosY) con el ancho barWidth y la altura negativa barHeight
+        doc.rect(currentBarX, chartPosY, barWidth, -barHeight, "F"); // la F indica que se debe colorear el rentángulo
+
+
+        doc.setTextColor(0); // color de texto para el total de cada categoría
+        doc.setFontSize(12); // tamaño de texto del total de cada categoría
+        // 10 + (barWidth=41.25/2)-5=25.6                    200+5=205, valor de cada categoria
+        // ejeX, ejeY, valor
+        doc.text(currentBarX + (barWidth / 2) - 5, chartPosY + 5, String(categoryCounts[category]));
+
+
+        //lo mismo para las etiquetas de categoría pero para el eje Y se le suman otros 5
+        //doc.setFontType("bolditalic");
+        doc.setFont("Helvetica", "bold");
+        doc.setFontSize(10);
+        doc.text(currentBarX + (barWidth / 2) - 5, chartPosY + 10, category, { maxWidth: barWidth, align: "center" });
+
+
+        // se actualiza la posición del eje X
+        currentBarX += barWidth + barSpacing;
+    }
+}
+
+
+
+/*
+        const chartPosX = 10; // margen izquierdo 
+        const chartPosY = 200; // margen superior  hasta el inicio de la gráfica
+        const chartWidth = 180; // ancho total de la gráfica de barra
+        const maxBarHeight = 100; // altura máxima de la gráfica de barras
+        const barSpacing = 5; // espaciado entre columnas
+*/
