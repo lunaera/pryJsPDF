@@ -551,8 +551,10 @@ document.getElementById("btnExportPDF").addEventListener("click", async () => {
             //headStyles: { fillColor: [41, 128, 185], textColor: [255, 195, 0], fontSize: 10 },
             headStyles: { // Estilos del encabezado 
                 fillColor: [41, 128, 185],
-                textColor: 255, fontSize: 12,
-                font: 'Helvetica', fontStyle: "bold",
+                textColor: 255,
+                fontSize: 12,
+                font: 'Helvetica',
+                fontStyle: "bold",
                 halign: 'center' //halign es Horizontal aligment
             },
             //bodyStyles: { textColor: [255, 195, 0], fontSize: 8 }, // Estilos del cuerpo
@@ -819,6 +821,8 @@ function cargarImagen(url) {
 
         // creamos un obj Imagen
         var img = new Image();
+
+        // Permitir el acceso a la imagen desde un origen diferente (CORS)
         img.crossOrigin = "anonymous"; // evitar que se bloquee al cargar la imágen
 
 
