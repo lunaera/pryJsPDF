@@ -1,0 +1,2 @@
+# pryLocalStorage
+persistencia de datos
